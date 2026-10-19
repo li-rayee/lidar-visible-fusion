@@ -1,0 +1,47 @@
+[
+  {
+    "bag": "go2w_sync_raw_20260610_094554",
+    "status": "valid",
+    "source_counts": {
+      "/frontvideostream": 544,
+      "/utlidar/cloud": 291,
+      "/utlidar/imu": 4745
+    },
+    "common_start_ns": 1781055955269578299,
+    "common_stop_ns": 1781055974212823764,
+    "common_duration_s": 18.943245465,
+    "trimmed_counts": {
+      "/frontvideostream": 540,
+      "/utlidar/cloud": 291,
+      "/utlidar/imu": 4728
+    },
+    "trimmed_pcd_frames": 291
+  },
+  {
+    "bag": "go2w_sync_raw_20260610_102458",
+    "status": "valid",
+    "source_counts": {
+      "/frontvideostream": 5378,
+      "/utlidar/cloud": 2859,
+      "/utlidar/imu": 46965
+    },
+    "common_start_ns": 1781058299548019915,
+    "common_stop_ns": 1781058487755087531,
+    "common_duration_s": 188.207067616,
+    "trimmed_counts": {
+      "/utlidar/cloud": 2857,
+      "/utlidar/imu": 46926,
+      "/frontvideostream": 5377
+    },
+    "trimmed_pcd_frames": 2857
+  },
+  {
+    "bag": "go2w_sync_raw_20260610_104013",
+    "status": "excluded_missing_topics",
+    "source_counts": {
+      "/frontvideostream": 1608,
+      "/utlidar/cloud": 0,
+      "/utlidar/imu": 0
+    }
+  }
+]
