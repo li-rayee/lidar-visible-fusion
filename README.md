@@ -1,7 +1,7 @@
 # 可见光与 LiDAR 协同感知可视化系统
 
 > GO2W 四足机器人 · ROS2 多传感器离线协同感知流水线
-> 深圳大学 电子与信息工程学院（电子信息工程） · 李瑞宇 · 学号 2023280491
+> 李瑞宇
 
 [![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=flat-square)](https://www.python.org)
 [![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat-square&logo=numpy&logoColor=white)](https://numpy.org)
@@ -9,11 +9,11 @@
 
 这个项目盯的是 GO2W 四足机器人上的 40 线激光雷达和前置可见光相机，做了一套全离线的多传感器协同感知流水线：从 ROS2 Bag 原始数据出发，解析、时间同步、点云增密、坐标归一化加着色、三分屏可视化，最后合成 H.264 视频。成片用左视频、右俯视加侧视的布局，让点云和光学视频在空间语义层面互相印证。
 
-完整课程报告在 [`docs/专综-2023280491-李瑞宇.pdf`](docs/专综-2023280491-李瑞宇.pdf)。
+完整技术报告在 [`docs/technical_report.pdf`](docs/technical_report.pdf)。
 
 ## 项目背景
 
-具身智能起来之后，四足机器人在非结构化环境下的感知能力成了研究热点。激光雷达给高精度三维测距（这个项目 40 线，最大 200m，点频约 1.152 Mpts/s），可见光相机补丰富的语义纹理（1280×720，约 14.3 fps）。两者互补融合，也就是协同感知，是机器人精确理解环境的关键路径。实验平台是深圳大学实验室的 GO2W，采集于 2026-06-10 校园巡检场景，共两段有效 ROS2 Bag（`bag_094554` 约 19 秒、`bag_102458` 约 187 秒）。
+具身智能起来之后，四足机器人在非结构化环境下的感知能力成了研究热点。激光雷达给高精度三维测距（这个项目 40 线，最大 200m，点频约 1.152 Mpts/s），可见光相机补丰富的语义纹理（1280×720，约 14.3 fps）。两者互补融合，也就是协同感知，是机器人精确理解环境的关键路径。实验平台是 GO2W 四足机器人，采集于 2026-06-10 校园巡检场景，共两段有效 ROS2 Bag（`bag_094554` 约 19 秒、`bag_102458` 约 187 秒）。
 
 核心需求有四条。数据解析：从 ROS2 Bag 准确抠出点云帧（`sensor_msgs/PointCloud2`）和视频帧，处理好各自时间戳。时间同步：两路采样频率不同（LiDAR 约 5Hz、相机约 14fps），得建帧级跨传感器时间对齐。场景重建：单帧只有约 2000 到 4000 点，得有增密方案才分得清场景结构。可视化输出：把点云和视频相互印证这件事直观地呈现出来。
 
@@ -77,6 +77,10 @@ ROS2 Bag 用 SQLite3 存消息（topic、timestamp、CDR 二进制）。`PointCl
 ### 可视化结论
 道路两侧边界在俯视图呈对称点云；正前方有人时 +X 前端出现局部密集区；侧视图里地面点连成连续条带（z 约 0.06m），障碍物在地面线上方竖向突出，和视频高度信息互相印证。
 
+## 数据集与采集
+
+真实数据来自 GO2W 平台 2026-06-10 的 ROS2 Bag 录制，载体、传感器、topic 与帧数细节见 [`DATASET.md`](DATASET.md)，采集平台上 LiDAR 与相机的启动方式见 [`docs/data-collection.md`](docs/data-collection.md)。原始 Bag 的 topic 计数与裁剪后帧数已整理进 [`dataset_catalog.json`](dataset_catalog.json)。
+
 ## 跑仓库里的演示
 
 仓库带了一个合成数据演示（`src/demo.py`），不用 137MB 原始视频也能跑通整条流水线，生成一张三分屏示例图：
@@ -86,9 +90,9 @@ pip install -r requirements.txt
 python src/demo.py            # 生成 example_tri_screen.png
 ```
 
-演示用 NumPy 合成地面、正前方行人、两侧建筑立面的点云和一张示意视频帧，依次过同步、累积、渲染，输出和报告图 1 到 3 同构的三分屏 PNG。
+演示用 NumPy 合成地面、正前方行人、两侧建筑立面的点云和一张示意视频帧，依次过同步、累积、渲染，输出同构的三分屏 PNG。
 
-真实处理脚本要读 ROS2 Bag 和 imageio-ffmpeg，核心逻辑和 PDF 报告片段一致，见 `src/` 下的 `bag_parse.py`、`sync.py`、`accumulate.py`、`render.py`。
+真实处理脚本要读 ROS2 Bag 和 imageio-ffmpeg，核心逻辑和技术报告一致，见 `src/` 下的 `bag_parse.py`、`sync.py`、`accumulate.py`、`render.py`。
 
 ## 结论与展望
 
@@ -100,6 +104,8 @@ python src/demo.py            # 生成 example_tri_screen.png
 lidar-visible-fusion/
 ├── README.md                      # 本文件
 ├── requirements.txt
+├── DATASET.md                     # 数据集说明（GO2W 平台、ROS2 Bag topic 与帧数）
+├── dataset_catalog.json           # 原始 Bag topic 计数与裁剪后帧数
 ├── src/
 │   ├── bag_parse.py               # ROS2 Bag 点云解析（PointCloud2 struct 解包）
 │   ├── sync.py                    # 时间戳最近邻同步（bisect, O(N·logM)）
@@ -107,6 +113,7 @@ lidar-visible-fusion/
 │   ├── render.py                  # 三分屏 Canvas 渲染（turbo 着色 + 方向标注）
 │   └── demo.py                    # 合成数据端到端演示 → example_tri_screen.png
 ├── docs/
-│   └── 专综-2023280491-李瑞宇.pdf  # 完整课程报告
+│   ├── technical_report.pdf       # 技术报告
+│   └── data-collection.md         # 采集平台 LiDAR/相机启动与录制说明
 └── example_tri_screen.png         # 演示生成的三分屏示例
 ```
